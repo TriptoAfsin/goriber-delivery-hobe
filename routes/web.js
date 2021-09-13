@@ -11,7 +11,9 @@ let initWebRoutes = (app) => {
     //get routes
     router.get("/", apiController.apiIntro);
     router.get("/products", apiController.products);
+    router.get("/add-products", apiController.addProducts);
     router.get("/admin", apiController.admin);
+    router.get("/init", apiController.dataInit);
     router.get("/checkout", apiController.admin);
 
 

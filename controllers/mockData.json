@@ -1,0 +1,101 @@
+[
+    {
+        "name": "Warehouse_1",
+        "address": "Mirpur-14, Dhaka",
+        "area": "Dhaka",
+        "contact_info": "+8801936396220",
+        "products": [
+            {
+                "id": 1,
+                "name": "Prod 1",
+                "selling_price": 500,
+                "description": "Description of Product",
+                "inventory": 50,
+                "inStock": true
+            },
+            {
+                "id": 2,
+                "name": "Prod 2",
+                "selling_price": 1500,
+                "description": "Description of Product",
+                "inventory": 20,
+                "inStock": true
+            },
+            {
+                "id": 3,
+                "name": "Prod 3",
+                "selling_price": 1200,
+                "description": "Description of Product",
+                "inventory": 30,
+                "inStock": true
+            }
+        ],
+        "sourcing_price": 350
+    },
+    {
+        "name": "Warehouse_2",
+        "address": "Gazipur, Dhaka",
+        "area": "Gazipur",
+        "contact_info": "+8801936396220",
+        "products": [
+            {
+                "id": 4,
+                "name": "Prod 4",
+                "selling_price": 200,
+                "description": "Description of Product",
+                "inventory": 70,
+                "inStock": true
+            },
+            {
+                "id": 5,
+                "name": "Prod 5",
+                "selling_price": 1000,
+                "description": "Description of Product",
+                "inventory": 0,
+                "inStock": false
+            },
+            {
+                "id": 6,
+                "name": "Prod 6",
+                "selling_price": 900,
+                "description": "Description of Product",
+                "inventory": 38,
+                "inStock": true
+            }
+        ],
+        "sourcing_price": 400
+    },
+    {
+        "name": "Warehouse_3",
+        "address": "Gazipur, Dhaka",
+        "area": "Gazipur",
+        "contact_info": "+8801936396220",
+        "products": [
+            {
+                "id": 7,
+                "name": "Prod 7",
+                "selling_price": 2000,
+                "description": "Description of Product",
+                "inventory": 70,
+                "inStock": true
+            },
+            {
+                "id": 8,
+                "name": "Prod 8",
+                "selling_price": 500,
+                "description": "Description of Product",
+                "inventory": 5,
+                "inStock": true
+            },
+            {
+                "id": 9,
+                "name": "Prod 9",
+                "selling_price": 900,
+                "description": "Description of Product",
+                "inventory": 35,
+                "inStock": true
+            }
+        ],
+        "sourcing_price": 400
+    }
+]

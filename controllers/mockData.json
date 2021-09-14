@@ -7,27 +7,27 @@
         "products": [
             {
                 "id": 1,
-                "name": "Prod 1",
+                "name": "Thumb Drive",
                 "selling_price": 500,
-                "description": "Description of Product",
+                "description": "USB 3 thumb drive of 32GB",
                 "inventory": 50,
-                "inStock": true
+                "inStock": "yes"
             },
             {
                 "id": 2,
-                "name": "Prod 2",
+                "name": "Ear Buds",
                 "selling_price": 1500,
-                "description": "Description of Product",
+                "description": "Bluetooth ear buds",
                 "inventory": 20,
-                "inStock": true
+                "inStock": "yes"
             },
             {
                 "id": 3,
-                "name": "Prod 3",
+                "name": "Trimmer",
                 "selling_price": 1200,
-                "description": "Description of Product",
+                "description": "Rechargeable hair trimmer",
                 "inventory": 30,
-                "inStock": true
+                "inStock": "yes"
             }
         ],
         "sourcing_price": 350
@@ -40,62 +40,62 @@
         "products": [
             {
                 "id": 4,
-                "name": "Prod 4",
+                "name": "Earphone",
                 "selling_price": 200,
-                "description": "Description of Product",
+                "description": "3.5mm earphone",
                 "inventory": 70,
-                "inStock": true
+                "inStock": "yes"
             },
             {
                 "id": 5,
-                "name": "Prod 5",
+                "name": "Calculator",
                 "selling_price": 1000,
-                "description": "Description of Product",
+                "description": "Casio 991es calculator",
                 "inventory": 0,
-                "inStock": false
+                "inStock": "no"
             },
             {
                 "id": 6,
-                "name": "Prod 6",
+                "name": "Joy Pad",
                 "selling_price": 900,
-                "description": "Description of Product",
+                "description": "XBOX 360 like gaming joypad",
                 "inventory": 38,
-                "inStock": true
+                "inStock": "yes"
             }
         ],
         "sourcing_price": 400
     },
     {
         "name": "Warehouse_3",
-        "address": "Gazipur, Dhaka",
-        "area": "Gazipur",
+        "address": "Mohakhali, Dhaka",
+        "area": "Dhaka",
         "contact_info": "+8801936396220",
         "products": [
             {
                 "id": 7,
-                "name": "Prod 7",
+                "name": "Smart Watch",
                 "selling_price": 2000,
-                "description": "Description of Product",
+                "description": "Xiaomi mi band 4",
                 "inventory": 70,
-                "inStock": true
+                "inStock": "yes"
             },
             {
                 "id": 8,
-                "name": "Prod 8",
+                "name": "Wallet",
                 "selling_price": 500,
-                "description": "Description of Product",
+                "description": "Smart black wallet",
                 "inventory": 5,
-                "inStock": true
+                "inStock": "yes"
             },
             {
                 "id": 9,
-                "name": "Prod 9",
+                "name": "Hand watch",
                 "selling_price": 900,
-                "description": "Description of Product",
+                "description": "Chinese analog hand watch",
                 "inventory": 35,
-                "inStock": true
+                "inStock": "yes"
             }
         ],
-        "sourcing_price": 400
+        "sourcing_price": 200
     }
 ]

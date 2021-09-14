@@ -12,6 +12,7 @@ let initWebRoutes = (app) => {
     router.get("/", apiController.apiIntro);
     router.get("/products", apiController.products);
     router.get("/products/:id", apiController.filterProducts);
+    router.get("/search/:query", apiController.searchProducts);
     router.get("/add-products", apiController.addProducts);
     router.get("/admin", apiController.admin);
     router.get("/init", apiController.dataInit);

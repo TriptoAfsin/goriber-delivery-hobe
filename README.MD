@@ -11,8 +11,10 @@ It's a mockup backend API for "Delivery Hobe" 😁
 ### Features - 
 1. Combined warehouse based products inventory fetching
 2. Products filtering by Warehouses
+3. Product name and description based searching(Exact Match)
 
 
 ### Endpoints - 
 1. /products
 2. /products/warehouse_name
+3. /search/"search_query"

@@ -9,7 +9,7 @@ let wareHouses = JSON.parse(rawData);
 
 //sql queries
 let SQL = {
-    createProductsTable: "CREATE TABLE products(id int AUTO_INCREMENT, prod_name VARCHAR(255), selling_price float(24), description VARCHAR(255),inventory int,in_stock binary,PRIMARY KEY (id))",
+    createProductsTable: "CREATE TABLE products(id int AUTO_INCREMENT, prod_name VARCHAR(255), selling_price float(24), description VARCHAR(65535),inventory int,in_stock VARCHAR(255),FULLTEXT(prod_name),PRIMARY KEY (id))",
     getProducts: "SELECT * FROM products",
     insertProducts: "INSERT INTO products SET ?",
     getTableNames: "SELECT table_name FROM information_schema.tables WHERE table_type = 'base table'",
@@ -31,11 +31,15 @@ let apiIntro = (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
     return res.status(200).json(apiStatus);
 }
-
+//utility functions
 //word includes
 let wordIncludes = (wordsToMatch, wordsFound) => {
     return wordsToMatch.some(word => wordsFound.toLowerCase().includes(word)); //received_message is an object
-  }
+}
+
+let emptyTableDetector = () => {
+
+}
 
 
 //connecting to db
@@ -253,8 +257,6 @@ let products = (req, res) => {
     for(let i =0; i<wareHouses.length; i++){
         allWareHouses.push(wareHouses[i].name)
     }
-    res.header("Access-Control-Allow-Origin", "*");
-
     db.query(SQL.getProducts,(err, result)=> {
         if(err){
             console.log(err)
@@ -277,9 +279,36 @@ let filterProducts = (req, res) => {
         if(err){
             console.log(err)
             console.error("🔴 Error while filtering products")
+            return res.status(400).send({
+                "Error": "Bad Request"
+            })
         }
         console.log(`🟢 Filtered Products Fetching Was Successful`)
         return res.status(200).send(result[0].products) //this will return a json array
+    })
+}
+
+//searching products
+let searchProducts = (req, res) => {
+    let searchSQL = `SELECT * FROM products WHERE prod_name LIKE ${req.params.query} OR description LIKE ${req.params.query}`
+    console.log(`Search Query: ${req.params.query}`)
+    db.query(searchSQL, (err, result) => {
+        if (err) {
+            console.log(err)
+            console.error("🔴 Error while searching products")
+            return res.status(400).json(
+                {
+                    "Error": "Bad Request" 
+                }
+            ); 
+        }
+        console.log(`🟢 Products searching was successful`)
+        return res.status(200).json(
+            {
+                searchQuery: req.params.query,
+                products: result, //returns all the products in the products table
+            }
+        ); //this will return a json array
     })
 }
 
@@ -317,9 +346,12 @@ let admin = (req, res) => {
 module.exports = {
     apiStatus: apiStatus,
     apiIntro: apiIntro,
+
     products: products,
     filterProducts: filterProducts,
+    searchProducts:searchProducts,
     addProducts: addProducts,
+
     checkout: checkout,
     admin: admin,
 

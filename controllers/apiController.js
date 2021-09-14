@@ -253,12 +253,6 @@ let products = (req, res) => {
     for(let i =0; i<wareHouses.length; i++){
         allWareHouses.push(wareHouses[i].name)
     }
-
-    let allProducts = []
-    //getting all the products and inserting in the allProducts array
-    for(let i =0; i<wareHouses.length; i++){
-        allProducts.push(wareHouses[i].products)
-    }
     res.header("Access-Control-Allow-Origin", "*");
 
     db.query(SQL.getProducts,(err, result)=> {
@@ -269,8 +263,8 @@ let products = (req, res) => {
         console.log(`🟢 Products fetching was successful`)
         return res.status(200).json(
             {
-                wareHouses: allWareHouses,
-                products: allProducts,
+                wareHouses: allWareHouses, //returns array of strings
+                products: result, //returns all the products in the products table
             }
         ); //this will return a json array
     })

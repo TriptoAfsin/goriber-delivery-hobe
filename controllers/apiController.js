@@ -193,6 +193,7 @@ let dataInit = (req, res) => {
 
     let isWarehouseTableSuccess = true
     let isWarehouseDataSuccess = true
+    let isProductsTableDataTransfer = true
 
     //creating warehouse table
     try{
@@ -207,12 +208,19 @@ let dataInit = (req, res) => {
     }catch(err){
         isWarehouseDataSuccess = false
     }
+
+    try{
+        InsertWareHousesToProducts()
+    }catch(err){
+        isProductsTableDataTransfer = false
+    }
     
     
     return res.status(200).json(
         {
             "Warehouse Table Creation Status": `${isWarehouseTableSuccess ? "🟢 Successful":"🔴 Failed"}`,
-            "Warehouse Data Insertion Status": `${isWarehouseDataSuccess ? "🟢 Successful":"🔴 Failed"}`
+            "Warehouse Data Insertion Status": `${isWarehouseDataSuccess ? "🟢 Successful":"🔴 Failed"}`,
+            "Products Table Data Insertion Status": `${isProductsTableDataTransfer ? "🟢 Successful":"🔴 Failed"}`
         }
     );
 }

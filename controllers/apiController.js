@@ -1,6 +1,7 @@
 require("dotenv").config();
 const mySql = require('mysql')
 const fs = require('fs')
+const validators = require('is-it-dash')
 
 //mock Datas
 let rawData = fs.readFileSync('./controllers/mockData.json')
@@ -9,7 +10,7 @@ let wareHouses = JSON.parse(rawData);
 
 //sql queries
 let SQL = {
-    createProductsTable: "CREATE TABLE products(id int AUTO_INCREMENT, prod_name VARCHAR(255), selling_price float(24), description VARCHAR(65535),inventory int,in_stock VARCHAR(255),FULLTEXT(prod_name),PRIMARY KEY (id))",
+    createProductsTable: "CREATE TABLE products(id int AUTO_INCREMENT, prod_name VARCHAR(255), selling_price float(24), description VARCHAR(65535),inventory int,in_stock VARCHAR(255),prod_origin VARCHAR(255),FULLTEXT(prod_name),PRIMARY KEY (id))",
     getProducts: "SELECT * FROM products",
     insertProducts: "INSERT INTO products SET ?",
     getTableNames: "SELECT table_name FROM information_schema.tables WHERE table_type = 'base table'",
@@ -20,8 +21,11 @@ let SQL = {
 let apiStatus = {
     endPoints: [
         "/products",
+        "/products/:warehouse_name",
+        "/search/'Search Query'",
         "/checkout",
-        "/admin"
+        "/admin",
+        "/admin/:id?inStock='yes'&inventory=50&adminKey=YourKey",
       ],
     DB_Connection_Status: false
 }
@@ -84,7 +88,7 @@ let productsTableCreator = () => {
                 console.log(err)
                 return console.error("🔴 Error occurred while creating products table")
             }
-            console.log(`🟢 Products table was created`)
+            return console.log(`🟢 Products table was created`)
         })
 
     })
@@ -160,7 +164,8 @@ let InsertWareHousesToProducts = () => {
                     selling_price: wareHouseProdObj[k].selling_price,
                     description: wareHouseProdObj[k].description,
                     inventory: wareHouseProdObj[k].inventory,
-                    in_stock: wareHouseProdObj[k].inStock
+                    in_stock: wareHouseProdObj[k].inStock,
+                    prod_origin: allWareHouses[i]
                 }
                 db.query(SQL.insertProducts, structuredProd, (err, result) => {
                     if (err) {
@@ -177,6 +182,15 @@ let InsertWareHousesToProducts = () => {
 
 
 let dataInit = (req, res) => {
+
+    if(!req.query.adminKey || req.query.adminKey !== process.env.ADMIN_KEY){
+        return res.status(401).json(
+            {
+                "Error": "Unauthorized Access !"
+            }
+        ) 
+    }
+
     let isWarehouseTableSuccess = true
     let isWarehouseDataSuccess = true
 
@@ -189,7 +203,7 @@ let dataInit = (req, res) => {
 
     //inserting warehouse table data
     try{
-        InsertWareHouseData()()
+        InsertWareHouseData()
     }catch(err){
         isWarehouseDataSuccess = false
     }
@@ -246,10 +260,6 @@ let InsertWareHouseData = () => {
 }
 
 
-
-
-
-
 //products
 let products = (req, res) => {
     let allWareHouses = []
@@ -271,9 +281,11 @@ let products = (req, res) => {
         ); //this will return a json array
     })
 }
+
+
 //filtering products
 let filterProducts = (req, res) => {
-    let sql = `SELECT products FROM ${req.params.id}`
+    let sql = `SELECT * FROM products WHERE prod_origin='${req.params.id}'`
 
     db.query(sql,(err, result)=> {
         if(err){
@@ -284,7 +296,7 @@ let filterProducts = (req, res) => {
             })
         }
         console.log(`🟢 Filtered Products Fetching Was Successful`)
-        return res.status(200).send(result[0].products) //this will return a json array
+        return res.status(200).send(result) //this will return a json array
     })
 }
 
@@ -329,15 +341,124 @@ let addProducts = (req, res) => {
 
 //checkout
 let checkout = (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    return res.status(200).json(apiStatus);
+    //this route is almost like products but here out of stock products are excluded 
+    let sql = `SELECT * FROM products WHERE in_stock!='no'`
+
+    db.query(sql,(err, result)=> {
+        if(err){
+            console.log(err)
+            console.error("🔴 Error while filtering products")
+            return res.status(400).send({
+                "Error": "Bad Request"
+            })
+        }
+        console.log(`🟢 Filtered Products Fetching Was Successful`)
+        return res.status(200).send(result) //this will return a json array
+    })
+}
+
+let buyProducts = (req, res) => {
+    if(!req.query.userKey || req.query.userKey !== process.env.USER_KEY){
+        return res.status(401).json(
+            {
+                "Error": "Unauthorized Access !"
+            }
+        ) 
+    }
+    if(!req.query.amount){
+        return res.status(400).json(
+            {
+                "Error": "Invalid Amount !"
+            }
+        ) 
+    }
+
+    let prodStateUpdateSQL = `UPDATE products SET  inventory = inventory - ${req.query.amount}  WHERE id = ${req.params.id}`
+
+    db.query(prodStateUpdateSQL,(err, result)=> {
+        if(err){
+            console.log(err)
+            console.error("🔴 Error while updating product")
+            return res.status(400).json(
+                {
+                    "Error": "Bad Request"
+                }
+            ) 
+        }
+        console.log(`🟢 Product updating was successful`)
+        return res.status(200).json(
+            {
+                "Status": `Successfully updated the product#${req.params.id}`
+            }
+        ) 
+    })
 }
 
 
 //admin
 let admin = (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
-    return res.status(200).json(apiStatus);
+    let allWareHouses = []
+    //getting all warehouse table names
+    for(let i =0; i<wareHouses.length; i++){
+        allWareHouses.push(wareHouses[i].name)
+    }
+    db.query(SQL.getProducts,(err, result)=> {
+        if(err){
+            console.log(err)
+            console.error("🔴 Error while retrieving products")
+        }
+        console.log(`🟢 Products fetching was successful`)
+        return res.status(200).json(
+            {
+                userMode: "Admin",
+                wareHouses: allWareHouses, //returns array of strings
+                products: result, //returns all the products in the products table
+            }
+        ); //this will return a json array
+    })
+}
+
+let updateProductState = (req, res) => {
+
+    let productConfig = {
+        in_stock: req.query.inStock,
+        inventory: req.query.inventory
+    }
+    if(!req.query.adminKey || req.query.adminKey !== process.env.ADMIN_KEY){
+        return res.status(401).json(
+            {
+                "Error": "Unauthorized Access !"
+            }
+        ) 
+    }
+
+    if(!req.query.inStock || !req.query.inventory){
+        return res.status(400).json(
+            {
+                "Error": "Either or both inStock, inventory query was missing"
+            }
+        ) 
+    }
+
+    let prodStateUpdateSQL = `UPDATE products SET in_stock=${productConfig.in_stock}, inventory=${productConfig.inventory}  WHERE id = ${req.params.id}`
+
+    db.query(prodStateUpdateSQL,(err, result)=> {
+        if(err){
+            console.log(err)
+            console.error("🔴 Error while updating product")
+            return res.status(400).json(
+                {
+                    "Error": "Bad Request"
+                }
+            ) 
+        }
+        console.log(`🟢 Post updating was successful`)
+        return res.status(200).json(
+            {
+                "Status": `Successfully updated the product#${req.params.id}`
+            }
+        ) 
+    })
 }
 
 
@@ -353,7 +474,10 @@ module.exports = {
     addProducts: addProducts,
 
     checkout: checkout,
+    buyProducts: buyProducts,
+
     admin: admin,
+    updateProductState: updateProductState,
 
 
     //init

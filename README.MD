@@ -25,11 +25,11 @@ package.json
 ### Endpoints - 
 1. /products
 2. /products/:warehouse_name
-3. /search/'Search Query'
+3. /search?query="Prod Name"
 4. /checkout
 5. /checkout/id?amount=2&userKey=YourUserKey
 6. /admin
-7. /admin/:id?inStock='yes'&inventory=50&adminKey=YourKey
+7. /admin/:id?inStock='yes'&inventory=50&adminKey=YourAdminKey
 
 
 ## Working Principle - 

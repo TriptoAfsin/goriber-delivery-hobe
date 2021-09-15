@@ -22,7 +22,7 @@ let apiStatus = {
     endPoints: [
         "/products",
         "/products/:warehouse_name",
-        "/search/'Search Query'",
+        "/search?query='Search Query'",
         "/checkout",
         "/admin",
         "/admin/:id?inStock='yes'&inventory=50&adminKey=YourKey",
@@ -310,8 +310,14 @@ let filterProducts = (req, res) => {
 
 //searching products
 let searchProducts = (req, res) => {
-    let searchSQL = `SELECT * FROM products WHERE prod_name LIKE ${req.params.query} OR description LIKE ${req.params.query}`
-    console.log(`Search Query: ${req.params.query}`)
+    if(!req.query.query){
+        return res.status(200).json(
+            {
+                "Error": "Missing Search Query" 
+            }
+        ); 
+    }
+    let searchSQL = `SELECT * FROM products WHERE prod_name LIKE ${req.query.query} OR description LIKE ${req.query.query}`
     db.query(searchSQL, (err, result) => {
         if (err) {
             console.log(err)
@@ -325,7 +331,7 @@ let searchProducts = (req, res) => {
         console.log(`🟢 Products searching was successful`)
         return res.status(200).json(
             {
-                searchQuery: req.params.query,
+                searchQuery: req.query.query,
                 products: result, //returns all the products in the products table
             }
         ); //this will return a json array

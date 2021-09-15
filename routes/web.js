@@ -12,7 +12,7 @@ let initWebRoutes = (app) => {
     router.get("/", apiController.apiIntro);
     router.get("/products", apiController.products); //public route
     router.get("/products/:id", apiController.filterProducts); //public route to filter by warehouses
-    router.get("/search/:query", apiController.searchProducts); //public route to search
+    router.get("/search", apiController.searchProducts); //public route to search
     //router.get("/add-products", apiController.addProducts);
 
     router.get("/admin", apiController.admin); //admin route but public

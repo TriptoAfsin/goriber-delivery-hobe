@@ -1,6 +1,9 @@
 # Goriber Delivery Hobe API
 --------------
 It's a mockup backend API for "Delivery Hobe" 😁
+
+<p align="center"><img src="https://i.imgur.com/LRsjp0F.png" width="256px" alt="Logo"></img></p>
+
 ### Technologies Used -
 1. Node JS
 2. Express

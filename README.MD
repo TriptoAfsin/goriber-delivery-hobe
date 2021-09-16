@@ -57,6 +57,26 @@ package.json
 5. ### Admin - 
     - Admin route is public but to change inventory status you have to pass ```Product ID``` as a param and provide ```inStock```, ```inventory``` & ```adminKey``` as queries
 
+
+## Usage Instructions - 
+1. ### Getting Products - 
+    - simply goto - ```/products``` route
+2. ### Filtering Products Based on Warehouses - 
+    - goto - ```/products/Warehouse_Name```, e.g - ```/products/Warehouse_2```(N.B: There are only 3 warehouses - Warehouse_1, Warehouse_2, Warehouse_3) 
+3. ### Searching Products - 
+    - goto - ```/search?query="Prod Name or Description"``` e.g - ```/search?query="Earphone"```
+4. ### Checking Out In Stock Products - 
+    - goto ```/checkout``` to see only the in stock products 
+5. ### Buying Products - 
+    - e.g - ```/checkout/2?amount=1&userKey=YourUserKey```
+    - **Precautions** - the amount can't be 0, amount can't be higher than the actual inventory(2 is the product id)
+6. ### Updating Product State - 
+    - e.g - ```admin/36?inStock="yes"&inventory=50&adminKey=yourAdminAPIKey```
+    - **Precautions** 
+
+        1. if ```inStock``` is set to "yes", then the inventory can't be 0
+        2. if ```inStock``` is set to "no", then the inventory have to be 0
+
 ### Areas of Improvement - 
 1. The code base could be refactored more 😥
 2. There were repeated blocks of codes, that could be reused if given time

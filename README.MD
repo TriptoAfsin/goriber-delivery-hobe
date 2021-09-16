@@ -57,6 +57,11 @@ package.json
 5. ### Admin - 
     - Admin route is public but to change inventory status you have to pass ```Product ID``` as a param and provide ```inStock```, ```inventory``` & ```adminKey``` as queries
 
+### Warehouse Data Structure - 
+<p align="center"><img src="https://i.imgur.com/8U4Jsqk.png"  alt="Warehouse Table"></img></p>
+
+*N.B: There are total 3 warehouse tables like this one*
+
 
 ## Usage Instructions - 
 1. ### Getting Products - 
@@ -76,6 +81,8 @@ package.json
 
         1. if ```inStock``` is set to "yes", then the inventory can't be 0
         2. if ```inStock``` is set to "no", then the inventory have to be 0
+
+**N.B: ALL THE KEYS ARE GIVEN IN THE EMAIL**
 
 ### Areas of Improvement - 
 1. The code base could be refactored more 😥

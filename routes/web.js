@@ -23,6 +23,8 @@ let initWebRoutes = (app) => {
     router.get("/checkout", apiController.checkout); //public route
     router.get("/checkout/:id", apiController.buyProducts); //user route requires user key(given in email)
 
+    //404 route
+    router.get("*", apiController.notFound);
 
     return app.use("/", router);
 }

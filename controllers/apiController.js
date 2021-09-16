@@ -24,6 +24,7 @@ let apiStatus = {
         "/products/:warehouse_name",
         "/search?query='Search Query'",
         "/checkout",
+        "/checkout/id?amount=2&userKey=YourUserKey",
         "/admin",
         "/admin/:id?inStock='yes'&inventory=50&adminKey=YourKey",
       ],
@@ -387,24 +388,57 @@ let buyProducts = (req, res) => {
         ) 
     }
 
-    let prodStateUpdateSQL = `UPDATE products SET  inventory = inventory - ${req.query.amount}  WHERE id = ${req.params.id}`
+    //Checking if amount is 0 or not 
+    if(req.query.amount == 0 || req.query.amount == `'0'` || req.query.amount == `"0"`){
+        console.log("Product amount can't be 0")
+        return res.status(400).json(
+            {
+                "Error": "Invalid Amount !"
+            }
+        ) 
+    }
 
-    db.query(prodStateUpdateSQL,(err, result)=> {
-        if(err){
+    //getting inventory
+    let getProductInventorySQL = `SELECT inventory FROM products WHERE id = ${req.params.id}`
+
+    db.query(getProductInventorySQL, (err, result) => {
+        if (err) {
             console.log(err)
             console.error("🔴 Error while updating product")
             return res.status(400).json(
                 {
                     "Error": "Bad Request"
                 }
-            ) 
+            )
         }
-        console.log(`🟢 Product updating was successful`)
-        return res.status(200).json(
-            {
-                "Status": `Successfully updated the product#${req.params.id}`
+        console.log(`🟢 Product inventory fetching was successful`)
+        if (result[0].inventory < req.query.amount) {
+            return res.status(400).json(
+                {
+                    "Error": "Invalid Amount"
+                }
+            )
+        }
+        let prodStateUpdateSQL = `UPDATE products SET  inventory = inventory - ${req.query.amount}  WHERE id = ${req.params.id}`
+
+        db.query(prodStateUpdateSQL, (err, result) => {
+            if (err) {
+                console.log(err)
+                console.error("🔴 Error while updating product")
+                return res.status(400).json(
+                    {
+                        "Error": "Bad Request"
+                    }
+                )
             }
-        ) 
+            console.log(`🟢 Product updating was successful`)
+            return res.status(200).json(
+                {
+                    "Status": `Successfully bought the product#${req.params.id} of amount: ${req.query.amount}`
+                }
+            )
+        })
+
     })
 }
 
@@ -438,6 +472,7 @@ let updateProductState = (req, res) => {
         in_stock: req.query.inStock,
         inventory: req.query.inventory
     }
+
     if(!req.query.adminKey || req.query.adminKey !== process.env.ADMIN_KEY){
         return res.status(401).json(
             {
@@ -454,7 +489,26 @@ let updateProductState = (req, res) => {
         ) 
     }
 
-    let prodStateUpdateSQL = `UPDATE products SET in_stock=${productConfig.in_stock}, inventory=${productConfig.inventory}  WHERE id = ${req.params.id}`
+    if(req.query.inStock.toLowerCase() === `"yes"` || req.query.inStock.toLowerCase() === `'yes'`){
+        if(req.query.inventory <= 0 || req.query.inventory === `"0"` || req.query.inventory === `'0'`)
+        return res.status(400).json(
+            {
+                "Error": "Wrong query combination"
+            }
+        ) 
+    }
+
+    if(req.query.inStock.toLowerCase() === `"no"` || req.query.inStock.toLowerCase() === `'no'`){
+        console.log("I'm here")
+        if(req.query.inventory > 0 || !req.query.inventory === `"0"` || !req.query.inventory === `'0'`)
+        return res.status(400).json(
+            {
+                "Error": "Wrong query combination"
+            }
+        ) 
+    }
+
+    let prodStateUpdateSQL = `UPDATE products SET in_stock=${productConfig.in_stock.toLowerCase()}, inventory=${productConfig.inventory}  WHERE id = ${req.params.id}`
 
     db.query(prodStateUpdateSQL,(err, result)=> {
         if(err){
@@ -466,13 +520,23 @@ let updateProductState = (req, res) => {
                 }
             ) 
         }
-        console.log(`🟢 Post updating was successful`)
+        console.log(`🟢 Product updating was successful`)
         return res.status(200).json(
             {
                 "Status": `Successfully updated the product#${req.params.id}`
             }
         ) 
     })
+}
+
+
+let notFound = (req, res) => {
+    return res.status(404).json(
+        {
+            "Error": `404 Not FOund`,
+            "Valid Endpoints": apiStatus.endPoints  
+        }
+    ) 
 }
 
 
@@ -496,4 +560,7 @@ module.exports = {
 
     //init
     dataInit: dataInit,
+
+    //404
+    notFound: notFound,
 }

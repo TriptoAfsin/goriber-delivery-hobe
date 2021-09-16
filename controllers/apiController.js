@@ -1,7 +1,6 @@
 require("dotenv").config();
 const mySql = require('mysql')
 const fs = require('fs')
-const validators = require('is-it-dash')
 
 //mock Datas
 let rawData = fs.readFileSync('./controllers/mockData.json')
@@ -36,14 +35,11 @@ let apiIntro = (req, res) => {
     res.header("Access-Control-Allow-Origin", "*");
     return res.status(200).json(apiStatus);
 }
+
 //utility functions
 //word includes
 let wordIncludes = (wordsToMatch, wordsFound) => {
     return wordsToMatch.some(word => wordsFound.toLowerCase().includes(word)); //received_message is an object
-}
-
-let emptyTableDetector = () => {
-
 }
 
 
@@ -229,7 +225,6 @@ let dataInit = (req, res) => {
 
 //Data init functions
 let wareHouseTableCreator = () => {
-    let wareHousesCreated = wareHouses.length
     for (let i = 0; i < wareHouses.length; i++) {
         let wareHouseSQL = `CREATE TABLE ${wareHouses[i].name}(id int AUTO_INCREMENT, warehouse_name VARCHAR(255), address VARCHAR(255), area VARCHAR(255),contact_info VARCHAR(255),products VARCHAR(65535),sourcing_price float(24),PRIMARY KEY (id))`
         db.query(wareHouseSQL, (err, result) => {
@@ -333,26 +328,11 @@ let searchProducts = (req, res) => {
         return res.status(200).json(
             {
                 searchQuery: req.query.query,
-                products: result, //returns all the products in the products table
+                products: result, //returns matched products
             }
-        ); //this will return a json array
+        );
     })
 }
-
-//adding dummy products
-let addProducts = (req, res) => {
-    res.header("Access-Control-Allow-Origin", "*");
-
-    db.query(SQL.getProducts,(err, result)=> {
-        if(err){
-            console.log(err)
-            console.error("🔴 Error while retrieving products")
-        }
-        console.log(`🟢 Products fetching was successful`)
-        return res.status(200).json(result); //this will return a json array
-    })
-}
-
 
 //checkout
 let checkout = (req, res) => {
@@ -372,6 +352,7 @@ let checkout = (req, res) => {
     })
 }
 
+//Buying Products - Part of Checkout
 let buyProducts = (req, res) => {
     if(!req.query.userKey || req.query.userKey !== process.env.USER_KEY){
         return res.status(401).json(
@@ -419,6 +400,7 @@ let buyProducts = (req, res) => {
                 }
             )
         }
+        //If all okay updating the inventory
         let prodStateUpdateSQL = `UPDATE products SET  inventory = inventory - ${req.query.amount}  WHERE id = ${req.params.id}`
 
         db.query(prodStateUpdateSQL, (err, result) => {
@@ -466,6 +448,7 @@ let admin = (req, res) => {
     })
 }
 
+//Changing product status - Part of Admin
 let updateProductState = (req, res) => {
 
     let productConfig = {
@@ -530,10 +513,11 @@ let updateProductState = (req, res) => {
 }
 
 
+//404 Route
 let notFound = (req, res) => {
     return res.status(404).json(
         {
-            "Error": `404 Not FOund`,
+            "Error": `404 Not Found`,
             "Valid Endpoints": apiStatus.endPoints  
         }
     ) 
@@ -546,14 +530,16 @@ module.exports = {
     apiStatus: apiStatus,
     apiIntro: apiIntro,
 
+    //products
     products: products,
     filterProducts: filterProducts,
     searchProducts:searchProducts,
-    addProducts: addProducts,
 
+    //checkout
     checkout: checkout,
     buyProducts: buyProducts,
 
+    //admin
     admin: admin,
     updateProductState: updateProductState,
 
